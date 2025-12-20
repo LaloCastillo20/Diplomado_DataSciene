@@ -3,6 +3,8 @@ import pandas as pd
 from varclushi import VarClusHi
 import plotly.express as px
 import numpy as np
+from scipy.cluster.hierarchy import linkage, fcluster
+from scipy.spatial.distance import squareform
 
 def calcular_IQR(df:pd.DataFrame, columna:str ):
 
@@ -116,3 +118,34 @@ def analizar_varclushi(dataframe, features_list, max_eigval2=1):
     fig.show()
     
     return resumen, best_vars['Variable'].tolist()
+
+
+
+def multicolinealidad_clustering(X, threshold=0.7):
+    """
+    Remueve multicolinealidad usando clustering de variables.
+    
+    Parámetros:
+    X : DataFrame con variables numéricas
+    threshold : nivel de correlación a partir del cual se consideran similares
+    
+    Retorna:
+    Lista de variables seleccionadas (una por cluster)
+    """
+    ### Selecionamos las variables numericas 
+    
+    x_num = X.select_dtypes(include='number')
+    # Matriz de correlación absoluta
+    corr_matrix = x_num.corr().abs()
+    # Convertimos correlación en distancia
+    distance_matrix = 1 - corr_matrix
+    distancia = squareform(distance_matrix.values, checks=False)
+    matrix = linkage(distancia, method='average')
+    clusters = fcluster(matrix, t=1-threshold, criterion='distance')
+    
+    selected_features = []
+    for cluster_id in np.unique(clusters):
+        cluster_vars = X.columns[clusters == cluster_id]
+        selected_features.append(cluster_vars[0])
+    
+    return selected_features
