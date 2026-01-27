@@ -1,0 +1,15 @@
+# Data Wrangling & Math
+numpy>=1.23.0
+pandas>=1.5.0
+scipy>=1.9.0
+
+# Visualization
+matplotlib>=3.6.0
+seaborn>=0.12.0
+
+# Machine Learning & Preprocessing
+scikit-learn>=1.2.0
+imbalanced-learn>=0.10.0
+
+# Utilities
+pickle5; python_version < '3.8'
